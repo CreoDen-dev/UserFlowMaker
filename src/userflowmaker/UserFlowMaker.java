@@ -1,8 +1,12 @@
 package userflowmaker;
 
+import java.awt.BasicStroke;
 import java.awt.BorderLayout;
+import java.awt.Color;
+import java.awt.Graphics2D;
 import java.awt.Point;
 import java.awt.Rectangle;
+import java.awt.image.BufferedImage;
 import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileWriter;
@@ -13,6 +17,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
 
+import javax.imageio.ImageIO;
 import javax.swing.JEditorPane;
 import javax.swing.JFrame;
 import javax.swing.JScrollPane;
@@ -24,12 +29,15 @@ import javafx.scene.Scene;
 public class UserFlowMaker extends JFrame {
 	private static final long serialVersionUID = 6147145829028296960L;
 	
-	public static final String projectPath = "./data/";
+	public static String projectPath = "./data/";
 	
 	public static UserFlowMaker instance;
 	
 	private ScreenSpaceCapture scrCapture;
 	private Workspace workspace;
+	
+	//TMP
+	public static int id = 0;
 	
 	public UserFlowMaker() {
 		KeyboardHandler.setup();
@@ -45,12 +53,40 @@ public class UserFlowMaker extends JFrame {
 			jfxPanel.setScene(new Scene(this.workspace));
 		});
 		this.add(jfxPanel);
+		
+		projectPath = "./data_" + System.currentTimeMillis() + "/";
 	}
 	
 	public void createCapture(int type) {
+		BufferedImage scr = this.scrCapture.createCapture();
+		final BufferedImage bi = Utils.resizeImageWithOutline(scr, scr.getWidth(), scr.getHeight(), 3);
+		if (type == 2) {
+			ShotDrawer sd = new ShotDrawer(bi, (image) -> {
+				saveImage(image, projectPath);
+			});
+		}
+		else {
+			saveImage(bi, projectPath);
+		}
+		/*
 		Platform.runLater(() -> {
-			this.workspace.createNode(this.scrCapture.createCapture());
+			this.workspace.createNode(bi);
 		});
+		*/
+	}
+	
+	private void saveImage(BufferedImage image, String dir) {
+		File fout = new File(dir);
+		fout.mkdirs();
+		File file = new File(dir + (id++) + ".png");
+		while (file.exists()) {
+			file = new File(dir + (id++) + ".png");
+		}
+		try {
+			ImageIO.write(image, "png", file);
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
 	}
 	
 	private void saveHtml(String nodes, String links) {
