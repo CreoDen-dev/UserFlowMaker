@@ -28,7 +28,6 @@ public class ShotDrawer extends JPanel implements MouseInputListener, KeyListene
 	private BufferedImage image;
 	private BufferedImage overlay;
 	private BufferedImage shapesOverlay;
-	private int prevX, prevY;
 	private Rectangle shapeCoords;
 	
 	public ShotDrawer(BufferedImage image, ShotDrawerCallback callback) {
@@ -49,7 +48,9 @@ public class ShotDrawer extends JPanel implements MouseInputListener, KeyListene
 		this.shapesOverlay = new BufferedImage(this.image.getWidth(), this.image.getHeight(), BufferedImage.TYPE_INT_ARGB);
 		this.shapesOverlay.createGraphics();
 		this.paintSelector = new PaintSelector(new Palette(Color.RED, Color.BLACK, Color.GREEN, Color.BLUE, Color.CYAN, Color.GRAY, Color.LIGHT_GRAY, Color.ORANGE, Color.MAGENTA));
-		
+	}
+	
+	public void show() {
 		this.paintSelector.show();
 		this.parent.setVisible(true);
 	}
@@ -75,11 +76,7 @@ public class ShotDrawer extends JPanel implements MouseInputListener, KeyListene
 	
 	@Override
 	public void mousePressed(MouseEvent e) {
-		prevX = e.getX();
-		prevY = e.getY();
-		if (e.getButton() == MouseEvent.BUTTON3) {
-			this.shapeCoords = new Rectangle(e.getX(), e.getY(), 0, 0);
-		}
+		this.shapeCoords = new Rectangle(e.getX(), e.getY(), 0, 0);
 	}
 	
 	@Override
@@ -91,33 +88,36 @@ public class ShotDrawer extends JPanel implements MouseInputListener, KeyListene
 
 	@Override
 	public void mouseDragged(MouseEvent e) {
-		if (e.getModifiersEx() == MouseEvent.BUTTON1_DOWN_MASK) {
+		if ((e.getModifiersEx() & MouseEvent.BUTTON1_DOWN_MASK) != 0) {
 			if (e.getX() < this.overlay.getWidth() && e.getY() < this.overlay.getHeight()) {
-				Graphics2D g = (Graphics2D)this.overlay.getGraphics();
-				g.setColor(this.paintSelector.getSelected());
-				g.drawLine(prevX, prevY, e.getX(), e.getY());
+				this.shapeCoords.width = e.getX() - this.shapeCoords.x;
+				this.shapeCoords.height = e.getY() - this.shapeCoords.y;
+				redrawOverlayRect(this.paintSelector.getPrimary(), e.isShiftDown());
 			}
 		}
 		if ((e.getModifiersEx() & MouseEvent.BUTTON3_DOWN_MASK) != 0) {
 			if (e.getX() < this.shapesOverlay.getWidth() && e.getY() < this.shapesOverlay.getHeight()) {
 				this.shapeCoords.width = e.getX() - this.shapeCoords.x;
 				this.shapeCoords.height = e.getY() - this.shapeCoords.y;
-				Graphics2D g = (Graphics2D)this.shapesOverlay.getGraphics();
-				g.setComposite(AlphaComposite.getInstance(AlphaComposite.CLEAR));
-				g.fillRect(0, 0, this.shapesOverlay.getWidth(), this.shapesOverlay.getHeight());
-				g.setComposite(AlphaComposite.getInstance(AlphaComposite.SRC_OVER));
-				g.setColor(this.paintSelector.getSelected());
-				if (e.isShiftDown()) {
-					g.fillRect(this.shapeCoords.x, this.shapeCoords.y, this.shapeCoords.width, this.shapeCoords.height);
-				}
-				else {
-					g.drawRect(this.shapeCoords.x, this.shapeCoords.y, this.shapeCoords.width, this.shapeCoords.height);
-				}
+				redrawOverlayRect(this.paintSelector.getSecondary(), e.isShiftDown());
 			}
 		}
-		prevX = e.getX();
-		prevY = e.getY();
 		this.repaint();
+	}
+	
+	private void redrawOverlayRect(Color color, boolean filled) {
+		Graphics2D g = (Graphics2D)this.shapesOverlay.getGraphics();
+		g.setComposite(AlphaComposite.getInstance(AlphaComposite.CLEAR));
+		g.fillRect(0, 0, this.shapesOverlay.getWidth(), this.shapesOverlay.getHeight());
+		g.setComposite(AlphaComposite.getInstance(AlphaComposite.SRC_OVER));
+		g.setColor(color);
+		Rectangle shape = Utils.normalizeRect(this.shapeCoords);
+		if (filled) {
+			g.fillRect(shape.x, shape.y, shape.width, shape.height);
+		}
+		else {
+			g.drawRect(shape.x, shape.y, shape.width, shape.height);
+		}
 	}
 
 	@Override

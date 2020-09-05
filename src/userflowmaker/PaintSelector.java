@@ -1,42 +1,67 @@
 package userflowmaker;
 
 import java.awt.Color;
-import java.awt.GridLayout;
-import java.util.ArrayList;
-
+import java.awt.Dimension;
+import javax.swing.BoxLayout;
 import javax.swing.JFrame;
 import javax.swing.JPanel;
 
 import userflowmaker.ShotDrawer.Palette;
 
-public class PaintSelector extends JPanel implements ColorCellSelectionListener {
+public class PaintSelector extends JPanel {
 	private static final long serialVersionUID = 5794883830681869475L;
 
 	protected JFrame parent;
 	
 	private Palette palette;
-	private ColorCell selection;
-	private ArrayList<ColorCellSelectionListener> listeners;
+	private ColorCell primary, secondary;
 	
 	public PaintSelector(Palette palette) {
-		this.parent = new JFrame();
+		this.parent = new JFrame("Palette");
 		this.parent.setDefaultCloseOperation(JFrame.DO_NOTHING_ON_CLOSE);
-		int xcells = Math.min(palette.colors.size(), 10);
-		int ycells = palette.colors.size() / xcells + 1;
-		this.parent.setSize(xcells * 20, ycells * 20 + 40);
+		int xcells = palette.colors.size();
+		int ycells = 2;
 		
 		this.palette = palette;
-		this.listeners = new ArrayList<>();
-		this.setLayout(new GridLayout(ycells, xcells));
+		
+		JPanel pprim = new JPanel();
+		pprim.setLayout(new BoxLayout(pprim, BoxLayout.X_AXIS));
+		JPanel psec = new JPanel();
+		psec.setLayout(new BoxLayout(psec, BoxLayout.X_AXIS));
+		
+		this.setLayout(new BoxLayout(this, BoxLayout.Y_AXIS));
 		
 		for (Color it : this.palette.colors) {
-			this.add(new ColorCell(it, this));
+			pprim.add(new ColorCell(it, (cell) -> {
+				this.primary.selcted = false;
+				this.primary.repaint();
+				this.primary = cell;
+				this.primary.selcted = true;
+				this.primary.repaint();
+			}));
+			psec.add(new ColorCell(it, (cell) -> {
+				this.secondary.selcted = false;
+				this.secondary.repaint();
+				this.secondary = cell;
+				this.secondary.selcted = true;
+				this.secondary.repaint();
+			}));
+			
+			if (it == Color.BLACK) {
+				this.primary = (ColorCell)pprim.getComponent(pprim.getComponentCount() - 1);
+				this.primary.selcted = true;
+			}
+			if (it == Color.RED) {
+				this.secondary = (ColorCell)psec.getComponent(psec.getComponentCount() - 1);
+				this.secondary.selcted = true;
+			}
 		}
 		
-		this.selection = (ColorCell)this.getComponent(0);
-		this.selection.selcted = true;
-		
+		this.add(pprim);
+		this.add(psec);
+		this.setPreferredSize(new Dimension(xcells * 60, ycells * 60));
 		this.parent.add(this);
+		this.parent.pack();
 	}
 	
 	public void close() {
@@ -47,25 +72,11 @@ public class PaintSelector extends JPanel implements ColorCellSelectionListener 
 		this.parent.setVisible(true);
 	}
 	
-	public void addColorCellSelectionListener(ColorCellSelectionListener listener) {
-		if (listener != null) {
-			this.listeners.add(listener);
-		}
+	public Color getPrimary() {
+		return this.primary.color;
 	}
 	
-	public Color getSelected() {
-		return this.selection.color;
-	}
-
-	@Override
-	public void onSelected(ColorCell cell) {
-		this.selection.selcted = false;
-		this.selection.repaint();
-		this.selection = cell;
-		this.selection.selcted = true;
-		this.selection.repaint();
-		for (ColorCellSelectionListener it : this.listeners) {
-			it.onSelected(cell);
-		}
+	public Color getSecondary() {
+		return this.secondary.color;
 	}
 }

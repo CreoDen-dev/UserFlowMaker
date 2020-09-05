@@ -1,27 +1,12 @@
 package userflowmaker;
 
-import java.awt.BasicStroke;
-import java.awt.BorderLayout;
-import java.awt.Color;
-import java.awt.Graphics2D;
 import java.awt.Point;
 import java.awt.Rectangle;
 import java.awt.image.BufferedImage;
-import java.io.BufferedWriter;
 import java.io.File;
-import java.io.FileWriter;
 import java.io.IOException;
-import java.net.MalformedURLException;
-import java.net.URL;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.HashSet;
-
 import javax.imageio.ImageIO;
-import javax.swing.JEditorPane;
 import javax.swing.JFrame;
-import javax.swing.JScrollPane;
-
 import javafx.application.Platform;
 import javafx.embed.swing.JFXPanel;
 import javafx.scene.Scene;
@@ -40,7 +25,7 @@ public class UserFlowMaker extends JFrame {
 	public static int id = 0;
 	
 	public UserFlowMaker() {
-		KeyboardHandler.setup();
+		this.setTitle("UserFlowMaker");
 		this.setDefaultCloseOperation(EXIT_ON_CLOSE);
 		this.setSize(800, 460);
 		this.setLocationRelativeTo(null);
@@ -63,19 +48,24 @@ public class UserFlowMaker extends JFrame {
 		if (type == 2) {
 			ShotDrawer sd = new ShotDrawer(bi, (image) -> {
 				saveImage(image, projectPath);
+				Platform.runLater(() -> {
+					this.workspace.createNode(image);
+				});
 			});
+			sd.show();
 		}
 		else {
 			saveImage(bi, projectPath);
+			Platform.runLater(() -> {
+				this.workspace.createNode(bi);
+			});
 		}
-		/*
-		Platform.runLater(() -> {
-			this.workspace.createNode(bi);
-		});
-		*/
 	}
 	
 	private void saveImage(BufferedImage image, String dir) {
+		if (true) {
+			return;
+		}
 		File fout = new File(dir);
 		fout.mkdirs();
 		File file = new File(dir + (id++) + ".png");
@@ -88,7 +78,7 @@ public class UserFlowMaker extends JFrame {
 			e.printStackTrace();
 		}
 	}
-	
+	/*
 	private void saveHtml(String nodes, String links) {
 		String head = "<!DOCTYPE html>\r\n" + 
 				"<html>\r\n" + 
@@ -123,7 +113,7 @@ public class UserFlowMaker extends JFrame {
 			return null;
 		}
 	}
-	
+	*/
 	public static Rectangle getNodeCaptureFromGrid(Point pos) {
 		Rectangle res = new Rectangle();
 		Rectangle capt = UserFlowMaker.instance.scrCapture.getSelectionRegion();
@@ -139,5 +129,6 @@ public class UserFlowMaker extends JFrame {
 	public static void main(String[] args) {
 		UserFlowMaker.instance = new UserFlowMaker();
 		UserFlowMaker.instance.setVisible(true);
+		KeyboardHandler.setup();
 	}
 }

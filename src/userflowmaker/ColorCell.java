@@ -19,7 +19,6 @@ public class ColorCell extends Component implements MouseListener {
 		this.selectedColor = new Color(255 - color.getRed(), 255 - color.getGreen(), 255 - color.getBlue());
 		this.listener = listener;
 		this.selcted = false;
-		this.setSize(20, 20);
 		this.addMouseListener(this);
 	}
 	

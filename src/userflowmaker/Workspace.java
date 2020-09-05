@@ -1,6 +1,8 @@
 package userflowmaker;
 
 import java.awt.image.BufferedImage;
+
+import javafx.geometry.Point2D;
 import javafx.scene.input.MouseButton;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.input.ScrollEvent;
@@ -74,8 +76,8 @@ public class Workspace extends Pane {
 			}
 		}
 		Node node = new Node(image);
-		node.setX(prefX);
-		node.setY(prefY);
+		node.setX(Math.round(prefX / this.gridScaleX) * this.gridScaleX);
+		node.setY(Math.round(prefY / this.gridScaleY) * this.gridScaleY);
 		node.setOnMousePressed((MouseEvent e) -> {
 			if (e.getButton() == MouseButton.PRIMARY) {
 				node.prevX = e.getX();
@@ -85,13 +87,12 @@ public class Workspace extends Pane {
 		});
 		node.setOnMouseDragged((MouseEvent e) -> {
 			if (e.getButton() == MouseButton.PRIMARY) {
-				double dx = (e.getX() - node.prevX);// * this.contentsPane.getScaleX();
-				double dy = (e.getY() - node.prevY);// * this.contentsPane.getScaleY();
+				double dx = (e.getX() - node.prevX);
+				double dy = (e.getY() - node.prevY);
 				node.setX(node.getX() + dx);
 				node.setY(node.getY() + dy);
 				node.prevX = e.getX();
 				node.prevY = e.getY();
-				
 				e.consume();
 			}
 		});
@@ -103,5 +104,8 @@ public class Workspace extends Pane {
 			}
 		});
 		this.contentsPane.getChildren().add(node);
+		UIArrow arrow = new UIArrow(new Point2D(0, 0), new Point2D(node.getX(), node.getY()));
+		node.addLink(arrow);
+		this.contentsPane.getChildren().add(arrow);
 	}
 }

@@ -4,8 +4,8 @@ import java.awt.AlphaComposite;
 import java.awt.BasicStroke;
 import java.awt.Color;
 import java.awt.Graphics2D;
+import java.awt.Rectangle;
 import java.awt.image.BufferedImage;
-import java.io.IOException;
 
 public class Utils {
 	
@@ -34,5 +34,9 @@ public class Utils {
 		g.setComposite(AlphaComposite.getInstance(AlphaComposite.CLEAR));
 		g.fillRect(0, 0, image.getWidth(), image.getHeight());
 		g.setComposite(AlphaComposite.getInstance(AlphaComposite.SRC_OVER));
+	}
+	
+	public static Rectangle normalizeRect(Rectangle v) {
+		return new Rectangle(Math.min(v.x, v.x + v.width), Math.min(v.y, v.y + v.height), Math.abs(v.width), Math.abs(v.height));
 	}
 }

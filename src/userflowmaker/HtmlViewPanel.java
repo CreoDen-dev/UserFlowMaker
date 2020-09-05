@@ -1,26 +1,19 @@
 package userflowmaker;
 
-import java.awt.BasicStroke;
 import java.awt.BorderLayout;
-import java.awt.Color;
 import java.awt.Graphics;
-import java.awt.Graphics2D;
 import java.awt.Rectangle;
 import java.net.URL;
 import javax.swing.JPanel;
-
 import javafx.application.Platform;
 import javafx.embed.swing.JFXPanel;
 import javafx.scene.Scene;
-import javafx.scene.canvas.Canvas;
 import javafx.scene.layout.Pane;
 import javafx.scene.layout.StackPane;
 import javafx.scene.web.WebView;
 
 public class HtmlViewPanel extends JPanel {
 	private static final long serialVersionUID = -8321362697083183706L;
-	
-	private static final BasicStroke stroke = new BasicStroke(2);
 	
 	private WebView htmlView;
 	private Pane viewCanvas;

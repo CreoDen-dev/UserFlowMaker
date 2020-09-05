@@ -29,8 +29,8 @@ public class KeyboardHandler implements NativeKeyListener {
 		if (key.getRawCode() >= 97 && key.getRawCode() <= 105) {
 			UserFlowMaker.instance.createCapture(key.getRawCode() - 96);
 		}
-		if (key.getRawCode() == 76) {
-			UserFlowMaker.instance.createCapture(5);
+		if (key.getRawCode() >= 48 && key.getRawCode() <= 57) {
+			UserFlowMaker.instance.createCapture(key.getRawCode() - 48);
 		}
 	}
 
