@@ -10,7 +10,7 @@ import java.util.Scanner;
 
 public class UpdateManager {
 	
-	public static final String currentVersion = "UserFlowMaker_v1.1";
+	public static final String currentVersion = "UserFlowMaker_v1.2";
 	private static String updateSource = "https://github.com/CreoDen-dev/UserFlowMaker/raw/master/build/";
 	
 	public static boolean isUpdateavailable() {
