@@ -116,7 +116,7 @@ public class UserFlowMaker extends JFrame {
 	
 	public static void main(String[] args) {
 		if (UpdateManager.isUpdateavailable()) {
-			if (JOptionPane.showConfirmDialog(null, "New version available. Update now?") == JOptionPane.YES_OPTION) {
+			if (JOptionPane.showConfirmDialog(null, "New version available. Update now?", "Update " + UpdateManager.currentVersion, JOptionPane.YES_NO_OPTION) == JOptionPane.YES_OPTION) {
 				UpdateManager.autoUpdate();
 				return;
 			}

@@ -31,7 +31,7 @@ public class UpdateManager {
 		return false;
 	}
 	
-	public static boolean autoUpdate() {
+	public static void autoUpdate() {
 		try {
 			URL log = new URL(updateSource + "versions.txt");
 			Scanner scanner = new Scanner(log.openStream());
@@ -49,11 +49,11 @@ public class UpdateManager {
 				rbc.close();
 				
 				File self = new File(UpdateManager.class.getProtectionDomain().getCodeSource().getLocation().getPath());
-				self.deleteOnExit();
-				return true;
+				if (!self.isDirectory() && self.isFile() && self.getName().endsWith(".jar")) {
+					Runtime.getRuntime().exec("cmd /c ping localhost -n 6 > nul && del \"" + self.getAbsolutePath() + "\"");
+				}
 			}
 		} catch (IOException e) {
 		}
-		return false;
 	}
 }

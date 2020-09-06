@@ -1,4 +1,24 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project>
+	<target name="libs_init">
+		<path id="all_libs">
+		    <fileset dir="lib">
+		        <include name="**/*.jar"/>
+		    </fileset>
+		</path>
+	</target>
 	
+	<target name="compile" depends="libs_init">
+        <mkdir dir="bin/ant/"/>
+        <javac srcdir="src" destdir="bin/ant/" classpathref="all_libs" />
+    </target>
+
+    <target name="jar">
+        <mkdir dir="build/"/>
+        <jar destfile="build/UserFlowMaker_v1.3.jar" basedir="bin/ant">
+            <manifest>
+                <attribute name="Main-Class" value="userflowmaker.UserFlowMaker"/>
+            </manifest>
+        </jar>
+    </target>
 </project>
