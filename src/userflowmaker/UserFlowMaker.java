@@ -1,15 +1,17 @@
 package userflowmaker;
 
-import java.awt.Point;
-import java.awt.Rectangle;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
 import javax.imageio.ImageIO;
 import javax.swing.JFrame;
+import javax.swing.JOptionPane;
+
 import javafx.application.Platform;
 import javafx.embed.swing.JFXPanel;
 import javafx.scene.Scene;
+import userflowmaker.screenshotEditor.ShotDrawer;
+import userflowmaker.workspace.Workspace;
 
 public class UserFlowMaker extends JFrame {
 	private static final long serialVersionUID = 6147145829028296960L;
@@ -63,9 +65,6 @@ public class UserFlowMaker extends JFrame {
 	}
 	
 	private void saveImage(BufferedImage image, String dir) {
-		if (true) {
-			return;
-		}
 		File fout = new File(dir);
 		fout.mkdirs();
 		File file = new File(dir + (id++) + ".png");
@@ -114,19 +113,14 @@ public class UserFlowMaker extends JFrame {
 		}
 	}
 	*/
-	public static Rectangle getNodeCaptureFromGrid(Point pos) {
-		Rectangle res = new Rectangle();
-		Rectangle capt = UserFlowMaker.instance.scrCapture.getSelectionRegion();
-		float wCoef = 2.5f;
-		float hCoef = 2.0f;
-		res.x = (int)(pos.x * capt.width * wCoef + capt.width * wCoef / 2.0 - capt.width / 2.0);
-		res.y = (int)(pos.y * capt.height * hCoef + capt.height * hCoef / 2.0 - capt.height / 2.0);
-		res.width = capt.width;
-		res.height = capt.height;
-		return res;
-	}
 	
 	public static void main(String[] args) {
+		if (UpdateManager.isUpdateavailable()) {
+			if (JOptionPane.showConfirmDialog(null, "New version available. Update now?") == JOptionPane.YES_OPTION) {
+				UpdateManager.autoUpdate();
+				return;
+			}
+		}
 		UserFlowMaker.instance = new UserFlowMaker();
 		UserFlowMaker.instance.setVisible(true);
 		KeyboardHandler.setup();
